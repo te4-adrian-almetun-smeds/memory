@@ -60,7 +60,7 @@ function flipBackCard(element) {
 // Flips a card
 function flipCard(element) {
   element.classList.add('flipped')
-  element.style.backgroundImage = `url(img/${data[e.target.getAttribute('data-id')]})`
+  element.style.backgroundImage = `url(img/${data[element.getAttribute('data-id')]})`
 }
 
 function cardPressed(e) {
