@@ -61,7 +61,13 @@ function lockPair(element) {
 // Flips a card back
 function flipBackCard(element) {
   element.classList.remove('flipped')
-  element.style.backgroundImage = `url(/img/back.png)`
+  element.classList.add('card-animation')
+  setTimeout(() => {
+    element.style.backgroundImage = `url(./img/back.png)`
+  }, 500);
+  setTimeout(() => {
+    element.classList.remove('card-animation')
+  }, 500);
   let x = currentlySelected.indexOf(element)
   currentlySelected.splice(x, 1)
 }
@@ -69,7 +75,13 @@ function flipBackCard(element) {
 // Flips a card
 function flipCard(element) {
   element.classList.add('flipped')
-  element.style.backgroundImage = `url(img/${data[element.getAttribute('data-id')]})`
+  element.classList.add('card-animation')
+  setTimeout(() => {
+    element.style.backgroundImage = `url(img/${data[element.getAttribute('data-id')]})`
+  }, 500);
+  setTimeout(() => {
+    element.classList.remove('card-animation')
+  }, 1000);
 }
 
 // Add point
@@ -94,13 +106,21 @@ function getLeaderboard() {
   return JSON.parse(localStorage.getItem('highScore'))
 }
 
+// Returns the leaderboard keys sorted as an Array
+function getLeaderboardKeysSorted() {
+  let scores = getLeaderboard();
+  return Object.keys(scores).sort(function (a, b) {
+    return scores[a] - scores[b]
+  })
+}
+
 // Handling the gamelogic
 function cardPressed(e) {
   if (cardCanBePressed(e.target)) {
     if (currentlySelected.length == 2 && !currentlySelected.includes(e.target)) {
-        // Auto toggle back
-        flipBackCard(currentlySelected[0])
-        flipBackCard(currentlySelected[0])
+      // Auto toggle back
+      flipBackCard(currentlySelected[0])
+      flipBackCard(currentlySelected[0])
     }
     if (cardIsFlipped(e.target)) {
       flipBackCard(e.target)
@@ -136,10 +156,22 @@ function cardPressed(e) {
 function displayGameOverOverlay() {
   let container = document.createElement('div')
   container.classList.add('game-over')
-  console.log(container)
   let temp = document.createElement('h1')
-  temp.innerHTML = 'You Won'
+  if (point < getLeaderboard()[getLeaderboardKeysSorted()[0]]) {
+    temp.innerHTML = 'New High Score'
+  } else {
+    temp.innerHTML = 'You Won'
+  }
   container.appendChild(temp)
+
+  temp = document.createElement('h4')
+  temp.textContent = `You ${point} | Perfect ${img.length * 2} | High Score ${(Object.keys(getLeaderboard()).length == 0) ? 'X' : getLeaderboard()[getLeaderboardKeysSorted()[0]]}`
+  container.appendChild(temp)
+
+  temp = document.createElement('p')
+  temp.addEventListener('click', leaderboard)
+  temp.innerHTML = 'Leaderboard'
+  container.append(temp)
 
   temp = document.createElement('p')
   temp.addEventListener('click', resetGame)
@@ -147,18 +179,14 @@ function displayGameOverOverlay() {
   container.append(temp)
 
   temp = document.createElement('input')
+  temp.required = 'true'
+  temp.placeholder = 'Name'
   tempButton = document.createElement('button')
   tempButton.addEventListener('click', submitScore)
   tempButton.textContent = 'Save Score'
-  temp.placeHolder = 'Name'
   container.append(temp)
   container.append(tempButton)
 
-  temp = document.createElement('p')
-  temp.addEventListener('click', leaderboard)
-  temp.innerHTML = 'Leaderboard'
-
-  container.append(temp)
   wrapper.appendChild(container)
   setTimeout(() => {
     qs('.game-over').style.right = '0';
@@ -167,8 +195,12 @@ function displayGameOverOverlay() {
 
 // Saves the points to the provided name
 function submitScore(e) {
-  savePoints(e.target.previousElementSibling.value)
-  leaderboard()
+  if (e.target.previousElementSibling.value.length > 1) {
+    savePoints(e.target.previousElementSibling.value)
+    leaderboard()
+  } else {
+    alert('Invalid name provided')
+  }
   e.preventDefault();
 }
 
@@ -186,9 +218,7 @@ function leaderboard(e) {
   title.textContent = 'Leaderboard'
   container.append(title)
   let scores = getLeaderboard();
-  for (let key of Object.keys(scores).sort(function (a, b) {
-      return scores[a] - scores[b]
-    })) {
+  for (let key of getLeaderboardKeysSorted()) {
     let temp = document.createElement('p')
     temp.textContent = `${key}: ${scores[key]}`
     container.appendChild(temp)
@@ -210,6 +240,10 @@ function isTheGameOver() {
 }
 
 function game() {
+  if (typeof localStorage.getItem('highScore') != 'object' || localStorage.getItem('highScore') == null) {
+    localStorage.setItem('highScore', JSON.stringify({}))
+  }
+
   let holder = []
   // Generate gameboard
   for (let e of img) {
@@ -238,6 +272,11 @@ function resetGame() {
 }
 
 game()
-if (typeof localStorage.getItem('highScore') != 'object' || localStorage.getItem('highScore') == null) {
-  localStorage.setItem('highScore', JSON.stringify({}))
+initialize()
+
+// initializes eventListeners
+function initialize() {
+  qs('header h3').addEventListener('click', () => {
+    leaderboard()
+  })
 }
