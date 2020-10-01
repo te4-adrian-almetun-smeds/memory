@@ -237,15 +237,20 @@ function leaderboard(e) {
   let title = document.createElement('h1')
   title.textContent = 'Leaderboard'
   container.append(title)
-  let scores = getLeaderboard();
+
+  leaderboard.appendChild(generateScoreList(container))
+
+  wrapper.appendChild(leaderboard)
+}
+
+function generateScoreList(container) {
+  let scores = getLeaderboard()
   for (let key of getLeaderboardKeysSorted()) {
     let temp = document.createElement('p')
     temp.textContent = `${key}: ${scores[key]}`
     container.appendChild(temp)
   }
-  leaderboard.appendChild(container)
-
-  wrapper.appendChild(leaderboard)
+  return container
 }
 
 // Removes the leaderboard from the document
@@ -260,9 +265,6 @@ function isTheGameOver() {
 }
 
 function game() {
-  if (typeof localStorage.getItem('highScore') != 'object' || localStorage.getItem('highScore') == null) {
-    localStorage.setItem('highScore', JSON.stringify({}))
-  }
 
   let holder = []
   // Generate gameboard
@@ -299,4 +301,7 @@ function initialize() {
   qs('header h3').addEventListener('click', () => {
     leaderboard()
   })
+  if (typeof localStorage.getItem('highScore') != 'object' || localStorage.getItem('highScore') == null) {
+    localStorage.setItem('highScore', JSON.stringify({}))
+  }
 }
