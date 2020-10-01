@@ -156,41 +156,61 @@ function cardPressed(e) {
 function displayGameOverOverlay() {
   let container = document.createElement('div')
   container.classList.add('game-over')
+  container.appendChild(gameOverOverlayTitle())
+  container.appendChild(gameOverOverlayPointBoard())
+  container.append(gameOverOverlayLeaderBoard())
+  container.append(gameOverOverlayRestart())
+  container.append(gameOverOverlayInput())
+  container.append(gameOverOverlayButton())
+
+  wrapper.appendChild(container)
+  setTimeout(() => {
+    qs('.game-over').style.right = '0';
+  }, 1500);
+}
+
+function gameOverOverlayButton() {
+  let tempButton = document.createElement('button')
+  tempButton.addEventListener('click', submitScore)
+  tempButton.textContent = 'Save Score'
+  return tempButton
+}
+
+function gameOverOverlayInput() {
+  let temp = document.createElement('input')
+  temp.required = 'true'
+  temp.placeholder = 'Name'
+  return temp
+}
+
+function gameOverOverlayRestart() {
+  let temp = document.createElement('p')
+  temp.addEventListener('click', resetGame)
+  temp.innerHTML = 'Restart'
+  return temp
+}
+
+function gameOverOverlayLeaderBoard() {
+  let temp = document.createElement('p')
+  temp.addEventListener('click', leaderboard)
+  temp.innerHTML = 'Leaderboard'
+  return temp
+}
+
+function gameOverOverlayTitle() {
   let temp = document.createElement('h1')
   if (point < getLeaderboard()[getLeaderboardKeysSorted()[0]]) {
     temp.innerHTML = 'New High Score'
   } else {
     temp.innerHTML = 'You Won'
   }
-  container.appendChild(temp)
+  return temp
+}
 
-  temp = document.createElement('h4')
+function gameOverOverlayPointBoard() {
+  let temp = document.createElement('h4')
   temp.textContent = `You ${point} | Perfect ${img.length * 2} | High Score ${(Object.keys(getLeaderboard()).length == 0) ? 'X' : getLeaderboard()[getLeaderboardKeysSorted()[0]]}`
-  container.appendChild(temp)
-
-  temp = document.createElement('p')
-  temp.addEventListener('click', leaderboard)
-  temp.innerHTML = 'Leaderboard'
-  container.append(temp)
-
-  temp = document.createElement('p')
-  temp.addEventListener('click', resetGame)
-  temp.innerHTML = 'Restart'
-  container.append(temp)
-
-  temp = document.createElement('input')
-  temp.required = 'true'
-  temp.placeholder = 'Name'
-  tempButton = document.createElement('button')
-  tempButton.addEventListener('click', submitScore)
-  tempButton.textContent = 'Save Score'
-  container.append(temp)
-  container.append(tempButton)
-
-  wrapper.appendChild(container)
-  setTimeout(() => {
-    qs('.game-over').style.right = '0';
-  }, 1500);
+  return temp
 }
 
 // Saves the points to the provided name
