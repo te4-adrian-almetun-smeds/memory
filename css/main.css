@@ -50,3 +50,52 @@
     flex-direction: column;
     backdrop-filter: blur(5px);
 }
+
+.leaderboard{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #2f2f2f;
+    color: whitesmoke;
+    z-index: 10;
+}
+
+.leaderboard div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    width: 100%;
+}
+
+.leaderboard div * {
+    width: fit-content;
+}
+
+.leaderboard span {
+    cursor: pointer;
+    align-self: flex-start;
+    margin: 20px;
+    font-size: 3em;
+}
+
+input {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid grey;
+    margin-bottom: 2px;
+    text-align: center;
+    color: whitesmoke;
+}
+
+input:focus {
+    outline: none;
+}
+
+button {
+    width: fit-content !important;
+    padding: 2px 4px;
+}

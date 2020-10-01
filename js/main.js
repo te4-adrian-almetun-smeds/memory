@@ -3,6 +3,7 @@ const template = qs('#card')
 const wrapper = qs('.wrapper')
 let currentlySelected = []
 let data = {}
+let point = 0
 
 function qs(selector) {
   return document.querySelector(selector)
@@ -29,7 +30,7 @@ function uuidv4() {
 // Ie. not locked and not 2 already selected
 // #=> true / false
 function cardCanBePressed(element) {
-  return (element.getAttribute('data-lock') != 'true' && currentlySelected.length != 2)
+  return (element.getAttribute('data-lock') != 'true')
 }
 
 // The card has been flipped?
@@ -71,11 +72,40 @@ function flipCard(element) {
   element.style.backgroundImage = `url(img/${data[element.getAttribute('data-id')]})`
 }
 
+// Add point
+function addPoint() {
+  point += 1
+}
+
+// Save the score to localStorage
+function savePoints(name) {
+  let x = JSON.parse(localStorage.getItem('highScore'))
+  x[name] = point
+  localStorage.setItem('highScore', JSON.stringify(x));
+}
+
+// Reset the current score
+function resetPoints() {
+  point = 0
+}
+
+// Returns the saved leaderboard from localStorage
+function getLeaderboard() {
+  return JSON.parse(localStorage.getItem('highScore'))
+}
+
+// Handling the gamelogic
 function cardPressed(e) {
   if (cardCanBePressed(e.target)) {
+    if (currentlySelected.length == 2 && !currentlySelected.includes(e.target)) {
+        // Auto toggle back
+        flipBackCard(currentlySelected[0])
+        flipBackCard(currentlySelected[0])
+    }
     if (cardIsFlipped(e.target)) {
       flipBackCard(e.target)
     } else {
+      addPoint()
       // Open a card
       flipCard(e.target)
       if (currentlySelected.length == 0) {
@@ -102,6 +132,7 @@ function cardPressed(e) {
   }
 }
 
+// Displays the game win overlay
 function displayGameOverOverlay() {
   let container = document.createElement('div')
   container.classList.add('game-over')
@@ -109,14 +140,67 @@ function displayGameOverOverlay() {
   let temp = document.createElement('h1')
   temp.innerHTML = 'You Won'
   container.appendChild(temp)
+
   temp = document.createElement('p')
   temp.addEventListener('click', resetGame)
   temp.innerHTML = 'Restart'
+  container.append(temp)
+
+  temp = document.createElement('input')
+  tempButton = document.createElement('button')
+  tempButton.addEventListener('click', submitScore)
+  tempButton.textContent = 'Save Score'
+  temp.placeHolder = 'Name'
+  container.append(temp)
+  container.append(tempButton)
+
+  temp = document.createElement('p')
+  temp.addEventListener('click', leaderboard)
+  temp.innerHTML = 'Leaderboard'
+
   container.append(temp)
   wrapper.appendChild(container)
   setTimeout(() => {
     qs('.game-over').style.right = '0';
   }, 1500);
+}
+
+// Saves the points to the provided name
+function submitScore(e) {
+  savePoints(e.target.previousElementSibling.value)
+  leaderboard()
+  e.preventDefault();
+}
+
+// Displays the leaderboard
+function leaderboard(e) {
+  let leaderboard = document.createElement('div');
+  leaderboard.classList.add('leaderboard');
+  let back = document.createElement('span')
+  back.textContent = '←'
+  back.addEventListener('click', removeLeaderboard)
+  leaderboard.append(back)
+  let container = document.createElement('div')
+
+  let title = document.createElement('h1')
+  title.textContent = 'Leaderboard'
+  container.append(title)
+  let scores = getLeaderboard();
+  for (let key of Object.keys(scores).sort(function (a, b) {
+      return scores[a] - scores[b]
+    })) {
+    let temp = document.createElement('p')
+    temp.textContent = `${key}: ${scores[key]}`
+    container.appendChild(temp)
+  }
+  leaderboard.appendChild(container)
+
+  wrapper.appendChild(leaderboard)
+}
+
+// Removes the leaderboard from the document
+function removeLeaderboard() {
+  qs('.leaderboard').outerHTML = ''
 }
 
 // Is the game over?
@@ -149,7 +233,11 @@ function game() {
 
 function resetGame() {
   qs('.wrapper').innerHTML = ''
+  resetPoints()
   game()
 }
 
 game()
+if (typeof localStorage.getItem('highScore') != 'object' || localStorage.getItem('highScore') == null) {
+  localStorage.setItem('highScore', JSON.stringify({}))
+}
