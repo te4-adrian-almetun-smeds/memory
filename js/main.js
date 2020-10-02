@@ -29,8 +29,8 @@ function uuidv4() {
 // Can the card be pressed?
 // Ie. not locked and not 2 already selected
 // #=> true / false
-function cardCanBePressed(element) {
-  return (element.getAttribute('data-lock') != 'true')
+function cardLocked(element) {
+  return (element.getAttribute('data-lock') == 'true')
 }
 
 // The card has been flipped?
@@ -116,7 +116,7 @@ function getLeaderboardKeysSorted() {
 
 // Handling the gamelogic
 function cardPressed(e) {
-  if (cardCanBePressed(e.target)) {
+  if (!cardLocked(e.target)) {
     if (currentlySelected.length == 2 && !currentlySelected.includes(e.target)) {
       // Auto toggle back
       flipBackCard(currentlySelected[0])
