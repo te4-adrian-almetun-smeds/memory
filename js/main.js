@@ -91,9 +91,9 @@ function addPoint() {
 
 // Save the score to localStorage
 function savePoints(name) {
-  let x = JSON.parse(localStorage.getItem('highScore'))
+  let x = JSON.parse(window.localStorage.getItem('highScore'))
   x[name] = point
-  localStorage.setItem('highScore', JSON.stringify(x));
+  window.localStorage.setItem('highScore', JSON.stringify(x));
 }
 
 // Reset the current score
@@ -103,7 +103,7 @@ function resetPoints() {
 
 // Returns the saved leaderboard from localStorage
 function getLeaderboard() {
-  return JSON.parse(localStorage.getItem('highScore'))
+  return JSON.parse(window.localStorage.getItem('highScore'))
 }
 
 // Returns the leaderboard keys sorted as an Array
@@ -301,7 +301,7 @@ function initialize() {
   qs('header h3').addEventListener('click', () => {
     leaderboard()
   })
-  if (typeof localStorage.getItem('highScore') != 'object' || localStorage.getItem('highScore') == null) {
-    localStorage.setItem('highScore', JSON.stringify({}))
+  if (typeof window.localStorage.getItem('highScore') == 'object' && window.localStorage.getItem('highScore') == null) {
+    window.localStorage.setItem('highScore', JSON.stringify({}))
   }
 }
