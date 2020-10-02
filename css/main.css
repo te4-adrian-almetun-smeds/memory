@@ -97,6 +97,7 @@ body {
 ::placeholder {
   color: #8d99ae;
 }
+
 input {
   background: transparent;
   border: none;
@@ -122,15 +123,15 @@ button {
 
 @keyframes flip {
   0% {
-    transform: rotateY(0deg) ;
+    transform: rotateY(0deg);
   }
-  
+
   50% {
     transform: rotateY(90deg);
   }
-  
+
   100% {
-    transform: rotateY(0deg) ;
+    transform: rotateY(0deg);
   }
 }
 
@@ -138,13 +139,14 @@ header h1 {
   width: fit-content;
   padding-left: 4em;
 }
+
 header h3 {
   margin-left: auto;
   margin-right: 4em;
   cursor: pointer;
 }
 
-header{
+header {
   display: flex;
   align-items: center;
   height: 4em;
